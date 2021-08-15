@@ -39,7 +39,8 @@ middleImg = randomProduct();
 rightImg = randomProduct();
 
 while(leftIndex === middleIndex  || middleIndex === rightIndex || rightIndex === leftIndex){
-leftIndex = randomProduct();
+    leftIndex = randomProduct();
+    rightIndex = randomProduct();
 }
 // while(leftIndex === middleIndex) {
 // leftIndex = randomProduct();
@@ -50,9 +51,9 @@ leftIndex = randomProduct();
     
 // }
 
-leftImg.setAttribute("src" , product[leftIndex].ProductImg);
-middleImg.setAttribute("src", product[middleIndex].middleImg );
-rightImg.setAttribute("src" , product[rightIndex].rightImg);
+leftImg.setAttribute('src' , product[leftIndex].ProductImg);
+middleImg.setAttribute('src', product[middleIndex].productImg );
+rightImg.setAttribute('src' , product[rightIndex].productImg);
 
 products[leftIndex].views++;
 products[middleIndex].views++;
@@ -66,26 +67,33 @@ rightImg.addEventListener('click', clickHandler);
 
 function clickHandler(event){
 if(attempt <= maxAttempt){
-let clickedImg = event.target.middleImg;
+
+let clickedImg = event.target.id;
 if(clickedImg === 'leftImg'){
 products[leftIndex].votes++;
 }
+
 else if(clickedImg === 'middleImg'){
 products[middleIndex].votes++
 }
+
 else if(clickedImg === 'rightImg'){
 products[rightIndex].votes++
 }
+
 renderImg();
 attempt++;
 
 }
-else {
-leftImg.removeEventListener('click', clickHandler );
-middleImg.removeEventListener('click', clickHandler);
-rightImg.removeEventListener('click', clickHandler);
+// else {
+// leftImg.removeEventListener('click', clickHandler );
+// middleImg.removeEventListener('click', clickHandler);
+// rightImg.removeEventListener('click', clickHandler);
+// }
 }
-}
+
+let btn = document.getElementById('button');
+btn.addEventListener('click', result);
 
 function result(){
 for(let i = 0 ; i<products.length ; i++){
@@ -94,5 +102,4 @@ result.appendChild(liEl);
 liEl.textContent = `${products[i].productName} has ${products[i].votes} votes and  ${products[i].views} views.`;
 
 }
-
 }
