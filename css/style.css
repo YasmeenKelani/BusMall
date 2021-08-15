@@ -6,17 +6,17 @@ h1 {
 
 }
 img {
-  position: relative;
+  /* position: relative; */
   right: 10px;
   display: block;
   width: 200px;
   float: left;
   height: 160px;
-  border: 4px solid pink;
+  border: 4px solid aquamarine;
 }
 #image-container {
   padding-left: 200px;
-  border: 2px solid black;
+  border: 2px solid aquamarine;
   width: 1000px;
   margin: 0 auto;
   height: 175px;
@@ -28,6 +28,7 @@ img {
   margin: 10px;
   border-radius: 30px;
 }
+
 span {
   margin-left: 50px;
 }
