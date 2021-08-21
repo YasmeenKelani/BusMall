@@ -1,151 +1,196 @@
 'use strict';
+
 let attemptEl = document.getElementById('attempts');
-
 let container = document.getElementById('image-container');
-
 let leftImg = document.getElementById('leftImg');
-let middleImg = document.getElementById('middleImg');
 let rightImg = document.getElementById('rightImg');
+let middleImg = document.getElementById('middleImg');
 let result = document.getElementById('results');
 
-let busImage=[];
-let views = [];
-let votes = [];
+ let busImages = ['bag.jpg', 'banana.jpg', 'breakfast.jpg', 'bathroom.jpg', 'boots.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg ', 'unicorn.jpg', 'water-can.jpg ', 'wine-glass.jpg'];
 
-let productsImg = ['bag.jpg', 'banana.jpg', 'breakfast.jpg', 'bathroom.jpg', 'boots.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg ', 'unicorn.jpg', 'water-can.jpg ', 'wine-glass.jpg'];
+let maxAttempts = 25;
+let attempt = 1
+let bus = [];
+let aNames = [];
+let vote = [];
+let view = [];
 
-let attempt = 1;
-let maxAttempt = 25;
-let products = [];
+let ulEl = document.getElementById('bus');
 
-function ProductImg(productName) {
-    this.productName = productName.split('.')[0];
-    this.productImg = `assest/${productName}`;
+function saveToLocalStorage() {
+  
+    let data = JSON.stringify(bus);
+    localStorage.setItem('busMall', data);
+
+}
+
+function readFromLocalStorage() {
+
+    let stringObject = localStorage.getItem('busMall');
+    let normalObject = JSON.parse(stringObject);
+
+    if (normalObject) {
+
+        bus = normalObject;
+        renderImg();
+
+    }
+
+}
+
+function BusImages(busName) {
+    this.bName = busName.split('.')[0];
+    this.bImg = `assest/${busName}`;
     this.votes = 0;
     this.views = 0;
-    products.push(this);
-    busImage.push(this.productName );
+    bus.push(this);
+    aNames.push(this.bName);
 }
 
-for (let i = 0; i < productsImg.length; i++) {
-    new ProductImg(productsImg[i]);
+for (let i = 0; i < busImages.length; i++) {
+    new BusImages(busImages[i]);
+    console.log(busImages[i]);
 }
 
-function randomProduct() {
-    return Math.floor(Math.random() * products.length);
+function randomImage() {
+    return Math.floor(Math.random() * bus.length);
+
 }
 
 let leftIndex;
-let middleIndex;
 let rightIndex;
+let middleIndex;
+let ran = [];
+function renderImg() {
 
-let roundImg = [];
-function renderProduct() {
-    leftIndex = randomProduct();
-    middleIndex = randomProduct();
-    rightIndex = randomProduct();
-
-    while (leftIndex === middleIndex || middleIndex === rightIndex || rightIndex === leftIndex ||  roundImg.includes(leftIndex)  || roundImg.includes(rightIndex) || roundImg.includes(middleIndex )) {
-        leftIndex = randomProduct();
-        middleIndex = randomProduct();
-        rightIndex = randomProduct();
+    while (leftIndex === middleIndex ||
+        middleIndex === rightIndex ||
+        leftIndex === rightIndex || ran.includes(leftIndex) ||
+        ran.includes(middleIndex) ||
+        ran.includes(rightIndex)) {
+        leftIndex = randomImage();
+        rightIndex = randomImage();
+        middleIndex = randomImage();
     }
-    roundImg = [];
-    roundImg[0] = rightIndex;
-    roundImg[1] = middleIndex;
-    roundImg[3] = leftIndex;
 
-    leftImg.setAttribute('src', products[leftIndex].productImg)
-    middleImg.setAttribute('src', products[middleIndex].productImg);
-    rightImg.setAttribute('src', products[rightIndex].productImg);
+    ran[0] = (leftIndex);
+    ran[1] = (rightIndex);
+    ran[2] = (middleIndex);
 
-    products[leftIndex].views++;
-    products[middleIndex].views++;
-    products[rightIndex].views++;
+    leftImg.setAttribute('src', bus[leftIndex].bImg);
+    rightImg.setAttribute('src', bus[rightIndex].bImg);
+    middleImg.setAttribute('src', bus[middleIndex].bImg);
+
+    bus[leftIndex].views++;
+    bus[rightIndex].views++;
+    bus[middleIndex].views++;
+
 }
 
-renderProduct();
+
+renderImg();
 
 leftImg.addEventListener('click', clickHandler);
-middleImg.addEventListener('click', clickHandler);
 rightImg.addEventListener('click', clickHandler);
+middleImg.addEventListener('click', clickHandler);
 
 function clickHandler(event) {
-    if (attempt <= maxAttempt) {
+    if (attempt <= maxAttempts) {
+        let clickedImage = event.target.id;
 
-        let clickedImg = event.target.id;
-        if (clickedImg === 'leftImg') {
-            products[leftIndex].votes++;
+        if (clickedImage === 'leftImg') {
+            bus[leftIndex].votes++;
+
+        } else if (clickedImage === 'rightImg') {
+            bus[rightIndex].votes++;
+
+        } else if (clickedImage === 'middleImg') {
+            bus[middleIndex].votes++;
+
         }
 
-        else if (clickedImg === 'middleImg') {
-            products[middleIndex].votes++
-        }
+        renderImg();
 
-        else if (clickedImg === 'rightImg') {
-            products[rightIndex].votes++
-        }
-
-        renderProduct();
         attempt++;
 
+
+    } else {
+
+        leftImg.removeEventListener('click', clickHandler);
+        rightImg.removeEventListener('click', clickHandler);
+        middleImg.removeEventListener('click', clickHandler);
     }
+
 }
+let btn = document.getElementById('btn');
+btn.addEventListener('click',showingResult);
 
-let btn = document.getElementById('button');
-btn.addEventListener('click', showResult);
+function showingResult() {
 
-let finalArr=[];
-function showResult() {
-    for (let i = 0; i < products.length; i++) {
+    for (let i = 0; i < bus.length; i++) {
+
         let liEl = document.createElement('li');
+
         result.appendChild(liEl);
-        liEl.textContent = `${products[i].productName} has ${products[i].votes} votes and  ${products[i].views} views.`;
-        views.push(busImage[i].views);
-        votes.push(busImage[i].votes);
-        finalArr.push(busImage[i].productImg);
 
+        liEl.textContent = `${bus[i].bName} has ${bus[i].votes} votes and ${bus[i].views} views.`;
+
+        vote.push(bus[i].votes);
+        view.push(bus[i].views);
 
     }
-}
- 
 
-    function chartRender() {
-        let ctx = document.getElementById('myChart').getContext('2d');
-        let myChart = new Chart(ctx, {
-            type : 'bar',
-            data: {
-                labels: productsImg,
-                datasets: [{
-                    label: '# of Votes',
-                    data: votes,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)'
-                    ],
-                    borderWidth: 1
-                }, {
-                    label: '# of views',
-                    data: views,
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)'
-                    ],
-                    borderWidth: 1
-     
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
+    btn.removeEventListener('click', showingResult);
+    saveToLocalStorage();
     chartRender();
+
+}
+
+function chartRender() {
+
+    let ctx = document.getElementById('myChart').getContext('2d');
+
+    let myChart = new Chart(ctx, {
+
+        type: 'bar',
+        data: {
+            labels: aNames,
+            datasets: [{
+                label: '# of Votes',
+                data: vote,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }, {
+                label: '# of views',
+                data: view,
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+readFromLocalStorage();
